@@ -41,6 +41,7 @@ class Contact
     # @param email [String] the contact's email
     def create(name, email, number = nil)
       contact = Contact.new(name, email, number)
+      binding.pry
       num=0
       flag = false
       File.readlines(@contact_file).each do |contact|
@@ -48,12 +49,16 @@ class Contact
         if contact[0] == name
           flag = true
           break
-        num+=1
+          num+=1
         end
       end
       if !(flag)
         File.open(@contact_file, 'a') do |file|
-          file.puts name + ", " + email + ", " + number
+          if !number.nil?
+            file.puts name + ", " + email + ", " + number.join(", ")
+          else
+            file.puts name + ", " + email + ", "
+          end
         end
         puts "#{name} added successfully with ID #{num+1}"
       else

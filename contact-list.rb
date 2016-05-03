@@ -18,7 +18,7 @@ class ContactList
         num = 0
         contacts.each do |contact|
           num+=1
-          puts "#{num}: #{contact.name} (#{contact.email})"
+          puts "#{num}: #{contact.name} (#{contact.email}) #{contact.number if contact.number}"
           if num%5 == 0
             puts "Hit <enter> to continue"
             enter = STDIN.gets
@@ -35,10 +35,17 @@ class ContactList
         name = STDIN.gets.chomp #?
         puts "Please enter an email address for #{name}"
         email = STDIN.gets.chomp #?
+        numbers = []
         puts "If desired, please enter a phone number for #{name}. If not, simply hit <enter>"
         number = STDIN.gets.chomp
-        if number
-          Contact.create(name, email, number)
+        while number != ""
+          numbers << number
+          puts "Please enter an additional number for #{name} if desired, or hit <enter> to continue"
+          number = STDIN.gets.chomp
+        end
+        binding.pry
+        if !(numbers.empty?)
+          Contact.create(name, email, numbers)
         else
           Contact.create(name,email)
         end
