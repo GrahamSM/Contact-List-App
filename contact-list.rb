@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 require_relative 'contact'
 
 # Interfaces between a user and their contact list. Reads from and writes to standard I/O.
@@ -14,10 +15,18 @@ class ContactList
   contacts = Contact.all
     case argv[0]
       when /list/
-        num = 1
+        num = 0
         contacts.each do |contact|
-          puts "#{num}: #{contact.name} (#{contact.email})"
           num+=1
+          puts "#{num}: #{contact.name} (#{contact.email})"
+          if num%5 == 0
+            puts "Hit <enter> to continue"
+            enter = STDIN.gets
+            if !(enter == "\n")
+              puts "true"
+              break
+            end
+          end
         end
         puts "#{num} records total"
       when /new/
