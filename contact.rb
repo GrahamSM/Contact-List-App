@@ -5,15 +5,17 @@ require 'pry'
 # The ContactList class will work with Contact objects instead of interacting with the CSV file directly
 class Contact
 
-  attr_accessor :name, :email
+  attr_accessor :name, :email, :number
   @contact_file = "./contacts.csv"
   # Creates a new contact object
   # @param name [String] The contact's name
   # @param email [String] The contact's email address
-  def initialize(name, email)
+  # @param number [String] The contact's phone number (optional)
+  def initialize(name, email, number = nil)
     # TODO: Assign parameter values to instance variables.
     @name = name
     @email = email
+    @number = number
   end
 
   # Provides functionality for managing contacts in the csv file.
@@ -25,7 +27,11 @@ class Contact
       contacts = []
       File.readlines(@contact_file).each do |line|
         contact = line.split(', ')
-        contacts << Contact.new(contact[0], contact[1])
+        if contact.size == 3
+          contacts << Contact.new(contact[0], contact[1], contact[2])
+        else
+          contacts << Contact.new(contact[0], contact[1])
+        end
       end
       return contacts
     end
@@ -33,16 +39,26 @@ class Contact
     # Creates a new contact, adding it to the csv file, returning the new contact.
     # @param name [String] the new contact's name
     # @param email [String] the contact's email
-    def create(name, email)
-      contact = Contact.new(name, email)
-      File.open(@contact_file, 'a') do |file|
-        file.puts name + ", " + email
-      end
-      num = 0
-      File.readlines(@contact_file).each do |i|
+    def create(name, email, number = nil)
+      contact = Contact.new(name, email, number)
+      num=0
+      flag = false
+      File.readlines(@contact_file).each do |contact|
+        contact = contact.split(",")
+        if contact[0] == name
+          flag = true
+          break
         num+=1
+        end
       end
-      puts "Contact created successfully with ID #{num}"
+      if !(flag)
+        File.open(@contact_file, 'a') do |file|
+          file.puts name + ", " + email + ", " + number
+        end
+        puts "#{name} added successfully with ID #{num+1}"
+      else
+        puts "Contact already exists"
+      end
     end
 
     # Find the Contact in the 'contacts.csv' file with the matching id.
@@ -50,7 +66,6 @@ class Contact
     # @return [Contact, nil] the contact with the specified id. If no contact has the id, returns nil.
     def find(id)
       contacts = Contact.all
-      binding.pry
       contact = contacts[id]
     end
     # Search for contacts by either name or email.
@@ -60,7 +75,11 @@ class Contact
       contacts = Contact.all
       contacts.each do |contact|
         if contact.name[term] || contact.email[term]
-          puts "#{contact.name} (#{contact.email})"
+          puts "#{contact.name} (#{contact.email}) #{contact.number if contact.number}"
+        elsif contact.number
+          if contact.number[term]
+            puts "#{contact.name} (#{contact.email}) #{contact.number}"
+          end
         end
       end
     end

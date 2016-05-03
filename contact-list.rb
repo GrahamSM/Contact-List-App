@@ -31,16 +31,25 @@ class ContactList
         puts "#{num} records total"
       when /new/
         puts "Contact creator..."
-        puts "Please enter a full name for the user"
+        puts "Please enter a full name for the contact"
         name = STDIN.gets.chomp #?
-        puts "Please enter an email address for the user"
+        puts "Please enter an email address for #{name}"
         email = STDIN.gets.chomp #?
-        Contact.create(name,email)
+        puts "If desired, please enter a phone number for #{name}. If not, simply hit <enter>"
+        number = STDIN.gets.chomp
+        if number
+          Contact.create(name, email, number)
+        else
+          Contact.create(name,email)
+        end
       when /show/
         contact = Contact.find(argv[1].to_i)
         if contact
           puts "Contact name: #{contact.name}"
           puts "Contact e-mail: #{contact.email}"
+          if contact.number
+            puts "Contact phone number: #{contact.number}"
+          end
         else
           puts "Contact not found"
         end
